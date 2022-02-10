@@ -1,0 +1,116 @@
+---
+title: "Exploring the BRFSS data"
+output: 
+  html_document: 
+    fig_height: 4
+    highlight: pygments
+    theme: spacelab
+---
+
+## Setup
+
+### Load packages
+
+```{r load-packages, message = FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+### Load data
+
+Make sure your data and R Markdown files are in the same directory. When loaded
+your data file will be called `brfss2013`. Delete this note when before you submit 
+your work. 
+
+```{r load-data}
+load("brfss2013.RData")
+```
+
+
+
+* * *
+
+## Part 1: Data
+The primary goals of the Behavioral Risk Factor Surveillance System (BRFSS) are to collect data on health risk behaviors, chronic diseases, and access to health services.  The BRFSS is designed to obtain information on the population of interest (adults, aged 18 years or older, residing in the United States). The random sampling procedure was performed to select telephone numbers. The data collected are weighted to make the sample more representative of the population, controlling for some demographic variables. Sampling was performed both for landline telephone users both cellular mobile telephone
+
+Since the design is not experimental but observational, only the relationship (and not the casualty) between the variables can be determined. However, the sample size is very large and the data are representative for adult residents and, therefore, generalizable.
+
+* * *
+
+## Part 2: Research questions
+
+**Research quesion 1:**
+RQ1: There is a difference in overall health status and gender with respect to physical training habit over the past 30 days
+
+Variables in RQ1: genhlth, sex, exany2
+
+**Research quesion 2:**
+RQ2: There is a difference in overall health status and gender with respect to average alcholic drink consumptionn
+
+Variables in RQ2: avedrnk2, sex, genhlth
+**Research quesion 3:**
+RQ3: There is a difference in overall health status and gender with respect to reported mental health.
+
+Variables in RQ3: menthlth, sex, genhlth
+
+* * *
+
+## Part 3: Exploratory data analysis
+
+
+**Research quesion 1:**
+Missing values were removed from the data set. 
+A preliminary data analysis was performed.
+The graph suggests that the proportion of men/women engaging in some type of physical activity remains roughly constant regardless of general health status.
+
+```{r}
+RQ1 <- select(brfss2013, exerany2, sex, genhlth) %>%
+filter(exerany2 != "NA")  %>% filter(sex != "NA") %>% filter(genhlth != "NA")
+summary(RQ1)
+ggplot(data = RQ1, aes(x = genhlth, fill = sex)) +
+   geom_bar(position = "fill") + ylab("proportion")+
+   geom_text(aes(label=signif(..count.. / tapply(..count.., ..x.., sum)[as.character(..x..)], digits=3)),
+    stat="count",
+    position=position_fill(vjust=0.5)) +
+  labs(y="Proportion")
+```
+
+
+**Research quesion 2:**
+A preliminary data analysis was performed.
+The graph suggests that the proportion of men/women with respect to alcoholic beverage consumption increases by nearly 10% as health conditions are reported as worse
+
+
+```{r}
+RQ2 <- select(brfss2013, avedrnk2, sex, genhlth) %>%
+filter(avedrnk2 != "NA")  %>% filter(sex != "NA") %>% filter(genhlth != "NA")
+summary(RQ2)
+ggplot(data = RQ2, aes(x = genhlth, fill = sex)) +
+   geom_bar(position = "fill") + ylab("proportion") +
+    geom_text(aes(label=signif(..count.. / tapply(..count.., ..x.., sum)[as.character(..x..)], digits=3)),
+    stat="count",
+    position=position_fill(vjust=0.5)) +
+  labs(y="Proportion")
+
+```
+
+
+
+
+**Research quesion 3:**
+Missing values were removed from the data set. 
+A preliminary data analysis was performed.
+The graph suggests that the proportion of men/women mental health remains roughly constant regardless of general health status.
+
+```{r}
+RQ3 <- select(brfss2013, menthlth, sex, genhlth) %>%
+filter(menthlth != "NA")  %>% filter(sex != "NA") %>% filter(genhlth != "NA")
+summary(RQ3)
+ggplot(data = RQ3, aes(x = genhlth, fill = sex)) +
+   geom_bar(position = "fill") + ylab("proportion") +
+     geom_text(aes(label=signif(..count.. / tapply(..count.., ..x.., sum)[as.character(..x..)], digits=3)),
+    stat="count",
+    position=position_fill(vjust=0.5)) +
+  labs(y="Proportion")
+```
+
